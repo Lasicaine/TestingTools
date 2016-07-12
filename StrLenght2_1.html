@@ -1,0 +1,57 @@
+﻿<!DOCTYPE html>
+<script>
+function getmystr(obj)
+{
+var x=obj.minput.value;
+var str = obj.sinput.value;
+var ss = obj.sinput.value;
+while (str.length < x) {
+str = str + ss;
+}
+if (str.length > x) {
+str = str.slice(0,x);
+}
+obj.res.value=str;
+}
+</script>
+<script>
+function lstr(ob)
+{
+var e=ob.minp.value;
+var d=e.length;
+ob.mout.value=d;
+}
+</script>
+
+<form name="lenghtstr">
+<h2>Формирование строки необходимой длины</h2>
+
+Символы: 
+ <br>
+ <input type="text" name="sinput" size="10" value="a">
+ <br>
+Длина строки: 
+ <br>
+ <input type="number" min="0" max="3000" name="minput" size="10" value="1">
+ <input type="button" value="OK" onclick="getmystr(lenghtstr)">
+ <br>
+ <br>
+Результат: 
+ <br>
+ <textarea name="res"></textarea>
+ <hr>
+  <br>
+ </form>
+ 
+<form name="lenstr">
+<h2>Подсчёт количества символов в строке</h2>
+
+Строка: 
+ <br>
+ <input type="text" name="minp">
+ <input type="button" value="OK" name="button" onclick="lstr(lenstr)">
+ <br>
+Длина строки: 
+ <br>
+ <input type="number" min="0" name="mout" size="10">
+</form>
