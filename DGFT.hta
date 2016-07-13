@@ -1,0 +1,193 @@
+﻿<html>
+<meta http-equiv="x-ua-compatible" content="ie=edge">
+<head>
+  <HTA:APPLICATION ID="oHTA"
+    APPLICATIONNAME="DGFT"
+    BORDER="thin"
+    BORDERSTYLE="normal"
+    CAPTION="yes"
+    maximizeButton="yes"
+    minimizeButton="yes"
+    SHOWINTASKBAR="yes"
+    SINGLEINSTANCE="yes"
+    SYSMENU="yes"
+    VERSION="1.0"
+    SRCOLL="yes"
+    >
+    <style type="text/css">
+	#calculator * {font-size: 16px;}
+	#calculator table {border: solid 3px silver; border-spacing: 6px; background-color: #EEE; }
+	#calculator table td {border-spacing: 6px;}
+	.btn {border: 1px; margin-top: 4px; width: 40px; height: 30px; background-color: #5661AA; color: #FFFFFF;}
+	input.display {width: 170px; text-align: right;}
+	td.buttons {border-top: solid 1px silver;}
+	</style>
+</head>
+
+<body>
+<script language="JavaScript" type="text/javascript">
+function getmystr(obj)
+{
+var x=obj.minput.value;
+var str = obj.sinput.value;
+var ss = obj.sinput.value;
+while (str.length < x) {
+str = str + ss;
+}
+if (str.length > x) {
+str = str.slice(0,x);
+}
+obj.res.value=str;
+}
+</script>
+<script>
+function lstr(ob)
+{
+var e=ob.minp.value;
+var d=e.length;
+ob.mout.value=d;
+}
+
+<!--Секундомер-->
+
+//объявляем переменные
+var base = 60; 
+var clocktimer,dateObj,dh,dm,ds,ms; 
+var readout=''; 
+var h=1, m=1, tm=1,s=0,ts=0,ms=0,show=true, init=0, ii=0; 
+//функция для очистки поля
+function clearСlock() { 
+	clearTimeout(clocktimer); 
+	h=1;m=1;tm=1;s=0;ts=0;ms=0; 
+	init=0;show=true; 
+	readout='00:00:00.00'; 
+	document.Stopwatcher.stopwatch.value=readout; 
+	ii = 0; 
+} 
+//функция для старта секундомера
+function startTIME() { 
+	var cdateObj = new Date(); 
+	var t = (cdateObj.getTime() - dateObj.getTime())-(s*1000); 
+	if (t>999) { s++; } 
+	if (s>=(m*base)) { 
+		ts=0; 
+		m++; 
+	} else { 
+		ts=parseInt((ms/100)+s); 
+		if(ts>=base) { ts=ts-((m-1)*base); } 
+	} 
+	if (m>(h*base)) { 
+		tm=1; 
+		h++; 
+	} else { 
+		tm=parseInt((ms/100)+m); 
+		if(tm>=base) { tm=tm-((h-1)*base); } 
+	} 
+	ms = Math.round(t/10); 
+	if (ms>99) {ms=0;} 
+	if (ms==0) {ms='00';} 
+	if (ms>0&&ms<=9) { ms = '0'+ms; } 
+	if (ts>0) { ds = ts; if (ts<10) { ds = '0'+ts; }} else { ds = '00'; } 
+	dm=tm-1; 
+	if (dm>0) { if (dm<10) { dm = '0'+dm; }} else { dm = '00'; } 
+	dh=h-1; 
+	if (dh>0) { if (dh<10) { dh = '0'+dh; }} else { dh = '00'; } 
+	readout = dh + ':' + dm + ':' + ds + '.' + ms; 
+	if (show==true) { document.Stopwatcher.stopwatch.value = readout; } 
+	clocktimer = setTimeout("startTIME()",1); 
+} 
+//функция для паузы
+function pause() { 
+	if (init==0) { dateObj = new Date(); 
+	startTIME(); 
+	init=1; 
+	} else { if(show==true) { 
+	show=false; 
+	} else { show=true; } } 
+} 
+</script>
+
+<h2>DGFT - Data Generation For Testing</h2>
+<br>
+<br>
+<form name="lenghtstr">
+<h2>Формирование строки необходимой длины</h2>
+
+Символы: 
+ <br>
+ <input type="text" name="sinput" size="10" value="a">
+ <br>
+Длина строки: 
+ <br>
+ <input type="number" min="0" max="3000" name="minput" size="10" value="1">
+ <input class="btn" type="button" value="OK" onclick="getmystr(lenghtstr)">
+ <br>
+ <br>
+Результат: 
+ <br>
+ <textarea name="res"></textarea>
+ <hr>
+ <br>
+ </form>
+ 
+<form name="lenstr">
+<h2>Подсчёт количества символов в строке</h2>
+
+Строка: 
+ <br>
+ <input type="text" name="minp">
+ <input class="btn" type="button" value="OK" name="button" onclick="lstr(lenstr)">
+ <br>
+Длина строки: 
+ <br>
+ <input type="number" min="0" name="mout" size="10">
+ <hr>
+ <br>
+</form>
+<!--Форма для Секундомера-->
+<form name="Stopwatcher">
+<h2>Секундомер</h2>
+   
+	<input class="btn" style="width: 100px;" type=button value="Запуск/Стоп" onclick="pause()">  
+	<input name=stopwatch size=10 value="00:00:00.00">  
+	<input class="btn" style="width: 100px;" type=button value="Обнулить" onclick="clearСlock()">
+    </form>
+ <hr>
+ <br>
+<!--Форма для Калькулятора-->
+<form name="calc" id="calculator">
+<h2 style="font-size: 22px;">Калькулятор</h2>
+	<table>
+	<tr>
+	<td>
+		<input type="text" name="input" size="16" class="display">
+	</td>
+	</tr>
+	<tr>
+	<td class="buttons">
+		<input class="btn" type="button" name="one" value="1" OnClick="calc.input.value += '1'">
+		<input class="btn" type="button" name="two" value="2" OnClick="calc.input.value += '2'">
+		<input class="btn" type="button" name="three" value="3" OnClick="calc.input.value += '3'">
+		<input class="btn" type="button" name="add" value="+" OnClick="calc.input.value += '+'">
+		<br>
+		<input class="btn" type="button" name="four" value="4" OnClick="calc.input.value += '4'">
+		<input class="btn" type="button" name="five" value="5" OnClick="calc.input.value += '5'">
+		<input class="btn" type="button" name="six" value="6" OnClick="calc.input.value += '6'">
+		<input class="btn" type="button" name="sub" value="-" OnClick="calc.input.value += '-'">
+		<br>
+		<input class="btn" type="button" name="seven" value="7" OnClick="calc.input.value += '7'">
+		<input class="btn" type="button" name="eight" value="8" OnClick="calc.input.value += '8'">
+		<input class="btn" type="button" name="nine" value="9" OnClick="calc.input.value += '9'">
+		<input class="btn" type="button" name="mul" value="x" OnClick="calc.input.value += '*'">
+		<br>
+		<input class="btn" type="button" name="clear" value="c" OnClick="calc.input.value = ''">
+		<input class="btn" type="button" name="zero" value="0" OnClick="calc.input.value += '0'">
+		<input class="btn" type="button" name="doit" value="=" OnClick="calc.input.value = eval(calc.input.value)">
+		<input class="btn" type="button" name="div"  value="/" OnClick="calc.input.value += '/'">
+	</td>
+	</tr>
+	</table>
+</form>
+</body>
+
+</html>
