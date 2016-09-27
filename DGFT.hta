@@ -15,16 +15,22 @@
     SRCOLL="yes"
     >
     <style type="text/css">
+	body {font-family: sans-serif;}
 	#calculator * {font-size: 16px;}
 	#calculator table {border: solid 3px silver; border-spacing: 6px; background-color: #EEE; }
 	#calculator table td {border-spacing: 6px;}
-	.btn {border: 1px; margin-top: 4px; width: 40px; height: 30px; background-color: #5661AA; color: #FFFFFF;}
+	#calculator h2 {font-size: 22px;}
+	input[type="button"] {border: 1px; margin-top: 4px; width: 100px; height: 30px; background-color: #5661AA; color: #FFFFFF;}
+	input[type="button"].button-calc {width: 40px;}
 	input.display {width: 170px; text-align: right;}
 	td.buttons {border-top: solid 1px silver;}
 	</style>
 </head>
 
 <body>
+
+<noscript><p>Извините, для работы приложения нужен включённый JavaScript</p></noscript>
+
 <script language="JavaScript" type="text/javascript">
 "use strict";
 function getmystr(obj)
@@ -54,7 +60,7 @@ ob.mout.value=d;
 var base = 60; 
 var clocktimer,dateObj,dh,dm,ds,ms; 
 var readout=''; 
-var h=1, m=1, tm=1,s=0,ts=0,ms=0,show=true, init=0, ii=0; 
+var h=1, m=1, tm=1, s=0, ts=0, ms=0, show=true, init=0, ii=0; 
 //функция для очистки поля
 function clearСlock() { 
 	clearTimeout(clocktimer); 
@@ -114,6 +120,56 @@ function calcme(clc) {
 	};
 }
 
+//Скрипт для нового секундомера
+function trim(string) { return string.replace (/\s+/g, " ").replace(/(^\s*)|(\s*)$/g, ''); }
+ var init=0;
+ var startDate;
+ var clocktimer;
+
+ function clearFields() {
+  init = 0;
+  clearTimeout(clocktimer);
+  document.clockform.clock.value='00:00:00.00';
+  document.clockform.label.value='';
+ }
+
+ function clearALL() {
+  clearFields();
+  document.getElementById('marker').innerHTML = '';
+ }
+
+ function startTIME() { 
+  var thisDate = new Date();
+  var t = thisDate.getTime() - startDate.getTime();
+  var ms = t%1000; t-=ms; ms=Math.floor(ms/10);
+  t = Math.floor (t/1000);
+  var s = t%60; t-=s;
+  t = Math.floor (t/60);
+  var m = t%60; t-=m;
+  t = Math.floor (t/60);
+  var h = t%60;
+  if (h<10) h='0'+h;
+  if (m<10) m='0'+m;
+  if (s<10) s='0'+s;
+  if (ms<10) ms='0'+ms;
+  if (init==1) document.clockform.clock.value = h + ':' + m + ':' + s + '.' + ms;
+  clocktimer = setTimeout("startTIME()",10);
+ }
+
+ function findTIME() {
+  if (init==0) {
+   startDate = new Date();
+   startTIME();
+   init=1;
+  } 
+  else {
+   var str = trim(document.clockform.label.value);
+   document.getElementById('marker').innerHTML = (str==''?'':str+': ') + 
+    document.clockform.clock.value + '<br>' + document.getElementById('marker').innerHTML;
+   clearFields();
+  }
+ }
+
 </script>
 
 <h2>DGFT - Data Generation For Testing</h2>
@@ -129,7 +185,7 @@ function calcme(clc) {
 Длина строки: 
  <br>
  <input type="number" min="0" max="3000" name="minput" size="10" value="1">
- <input class="btn" type="button" value="OK" onclick="getmystr(lenghtstr)">
+ <input type="button" value="OK" onclick="getmystr(lenghtstr)">
  <br>
  <br>
 Результат: 
@@ -145,7 +201,7 @@ function calcme(clc) {
 Строка: 
  <br>
  <input type="text" name="minp">
- <input class="btn" type="button" value="OK" name="button" onclick="lstr(lenstr)">
+ <input type="button" value="OK" name="button" onclick="lstr(lenstr)">
  <br>
 Длина строки: 
  <br>
@@ -157,15 +213,31 @@ function calcme(clc) {
 <form name="Stopwatcher">
 <h2>Секундомер</h2>
    
-	<input class="btn" style="width: 100px;" type=button value="Запуск/Стоп" onclick="pause()">  
+	<input type=button value="Запуск/Стоп" onclick="pause()">  
 	<input name=stopwatch size=10 value="00:00:00.00">  
-	<input class="btn" style="width: 100px;" type=button value="Обнулить" onclick="clearСlock()">
+	<input type=button value="Обнулить" onclick="clearСlock()">
     </form>
  <hr>
  <br>
+<!--Фрома для нового секундомера>-->
+<form name="clockform">
+<h2>Новый Секундомер</h2>
+ <p>
+  <input name="starter" type="button" value="Старт/Стоп" onclick="findTIME()"> 
+  <input name="clock" size="12" maxlength="12" value="00:00:00.00">
+ Метка: 
+ <input name="label" size="12" maxlength="40" value="">
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+ <input name="clearer" type="button" value="Сбросить всё" onclick="clearALL()">
+ </p>
+ <p id="marker">
+ </p>
+</form>
+<hr>
+<br>
 <!--Форма для Калькулятора-->
 <form name="calc" id="calculator">
-<h2 style="font-size: 22px;">Калькулятор</h2>
+<h2>Калькулятор</h2>
 	<table>
 	<tr>
 	<td>
@@ -174,25 +246,25 @@ function calcme(clc) {
 	</tr>
 	<tr>
 	<td class="buttons">
-		<input class="btn" type="button" name="one" value="1" onclick="calc.input.value += '1'">
-		<input class="btn" type="button" name="two" value="2" onclick="calc.input.value += '2'">
-		<input class="btn" type="button" name="three" value="3" onclick="calc.input.value += '3'">
-		<input class="btn" type="button" name="add" value="+" onclick="calc.input.value += '+'">
+		<input class="button-calc" type="button" name="one" value="1" onclick="calc.input.value += '1'">
+		<input class="button-calc" type="button" name="two" value="2" onclick="calc.input.value += '2'">
+		<input class="button-calc" type="button" name="three" value="3" onclick="calc.input.value += '3'">
+		<input class="button-calc" type="button" name="add" value="+" onclick="calc.input.value += '+'">
 		<br>
-		<input class="btn" type="button" name="four" value="4" onclick="calc.input.value += '4'">
-		<input class="btn" type="button" name="five" value="5" onclick="calc.input.value += '5'">
-		<input class="btn" type="button" name="six" value="6" onclick="calc.input.value += '6'">
-		<input class="btn" type="button" name="sub" value="-" onclick="calc.input.value += '-'">
+		<input class="button-calc" type="button" name="four" value="4" onclick="calc.input.value += '4'">
+		<input class="button-calc" type="button" name="five" value="5" onclick="calc.input.value += '5'">
+		<input class="button-calc" type="button" name="six" value="6" onclick="calc.input.value += '6'">
+		<input class="button-calc" type="button" name="sub" value="-" onclick="calc.input.value += '-'">
 		<br>
-		<input class="btn" type="button" name="seven" value="7" onclick="calc.input.value += '7'">
-		<input class="btn" type="button" name="eight" value="8" onclick="calc.input.value += '8'">
-		<input class="btn" type="button" name="nine" value="9" onclick="calc.input.value += '9'">
-		<input class="btn" type="button" name="mul" value="x" onclick="calc.input.value += '*'">
+		<input class="button-calc" type="button" name="seven" value="7" onclick="calc.input.value += '7'">
+		<input class="button-calc" type="button" name="eight" value="8" onclick="calc.input.value += '8'">
+		<input class="button-calc" type="button" name="nine" value="9" onclick="calc.input.value += '9'">
+		<input class="button-calc" type="button" name="mul" value="x" onclick="calc.input.value += '*'">
 		<br>
-		<input class="btn" type="button" name="clear" value="c" onclick="calc.input.value = ''">
-		<input class="btn" type="button" name="zero" value="0" onclick="calc.input.value += '0'">
-		<input class="btn" type="button" name="doit" value="=" onclick="calcme(calc.input.value)">
-		<input class="btn" type="button" name="div"  value="/" onclick="calc.input.value += '/'">
+		<input class="button-calc" type="button" name="clear" value="c" onclick="calc.input.value = ''">
+		<input class="button-calc" type="button" name="zero" value="0" onclick="calc.input.value += '0'">
+		<input class="button-calc" type="button" name="doit" value="=" onclick="calcme(calc.input.value)">
+		<input class="button-calc" type="button" name="div"  value="/" onclick="calc.input.value += '/'">
 	</td>
 	</tr>
 	</table>
