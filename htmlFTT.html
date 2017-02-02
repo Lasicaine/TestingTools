@@ -1,0 +1,423 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<meta http-equiv="x-ua-compatible" content="ie=edge">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Functional testing tools</title>
+    <style type="text/css">
+        * {
+            margin: 0;
+            padding: 0;
+        }
+        
+        html {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            text-align: center;
+            background: #14243d;
+            background: radial-gradient(ellipse at center, #14243d 0%, #030611 100%);
+        }
+        
+        body {
+            height: 100%;
+            font: 14px/1.5 Arial, Helvetica, sans-serif;
+        }
+        
+        .wrapper {
+            display: table;
+            height: 100%;
+            width: 100%;
+            min-width: 1150px;
+        }
+        
+        .content {
+            display: table-row;
+            height: 100%;
+            font-size: 13px;
+            color: #E5EBEE;
+        }
+        
+        .content label {
+            margin-right: 10px;
+            font-weight: bold;
+        }
+        
+        .header {
+            background-color: #0F3753;
+            color: #FFFFFF;
+        }
+        
+        .subheader {
+            margin-bottom: 20px;
+            background-color: #215B7A;
+            color: #FFFFFF;
+        }
+        
+        .left_col {
+            width: 50%;
+            float: left;
+        }
+        
+        .right_col {
+            width: 50%;
+            float: left
+        }
+        
+        .footer {
+            text-align: right;
+            margin: 10px;
+            font-size: 13px;
+            color: #8C91A0;
+        }
+        
+        .wrapper_inline_block {
+            display: inline-block;
+            margin-bottom: 10px;
+        }
+        
+        .left_float {
+            float: left;
+        }
+        
+        .result_align {
+            text-align: left;
+        }
+        
+        .label_original_string {
+            width: 51px;
+            display: inline-block;
+        }
+        
+        .stopwatcher_result {
+            display: inline-block;
+            margin-top: 30px;
+            font-size: 1.2em;
+            text-align: right;
+        }
+        
+        #calculator table {
+            display: inline-block;
+            border-spacing: 6px;
+            border: solid 3px #A9A9A9;
+            background-color: #EEE;
+        }
+        
+        #calculator td.buttons {
+            border-top: solid 1px #A9A9A9;
+            padding-top: 4px;
+            width: 190px;
+        }
+        
+        #calculator input[type="text"] {
+            margin: 2px 0;
+            padding: 4px;
+            width: 174px;
+            height: 22px;
+            border: solid 1px #A9A9A9;
+            text-align: right;
+        }
+        
+        input[type="text"],
+        input[type="number"] {
+            border: 1px;
+            margin: 4px 20px 0 0;
+            width: 100px;
+            height: 30px;
+            font-size: 1.2em;
+            text-align: center;
+        }
+        
+        input[type="button"] {
+            border: 1px;
+            margin: 4px 0 4px 0;
+            width: 100px;
+            height: 30px;
+            background-color: #4D7B94;
+            color: #FFFFFF;
+        }
+        
+        input[type="button"].button-calc {
+            width: 40px;
+            margin: 4px 2px;
+        }
+        
+        input[type="button"].button-start {
+            margin-right: 20px;
+        }
+        
+        input[type=number]::-webkit-inner-spin-button,
+        input[type=number]::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        
+        input[type="text"].input_string {
+            width: 320px;
+        }
+        
+        textarea {
+            width: 96%;
+            max-width: 99%;
+            height: 150px;
+            margin: 5px 0 -5px 0;
+            font-size: 1.2em;
+            font-family: sans-serif;
+        }
+        
+        form {
+            margin: 20px 10px;
+            padding-bottom: 20px;
+            border: 1px solid #215B7A;
+        }
+    </style>
+</head>
+
+<body>
+
+    <noscript><p>Attention! You need to have JavaScript enabled in your browser.</p></noscript>
+
+    <script language="JavaScript" type="text/javascript">
+        "use strict";
+
+        //Variable vor Stopwatch
+
+        const ftt = {}
+
+        ftt.init = 0;
+        ftt.startDate = undefined;
+        ftt.clocktimer = undefined;
+
+        window.onload = getThisYear;
+
+        //Function for get this year
+        function getThisYear() {
+            let year = new Date();
+            thisYear.innerHTML = year.getFullYear();
+        }
+
+        //Function for create string
+        function createString() {
+            let str = createdStringForm.symbols.value;
+            let ss = createdStringForm.symbols.value;
+            let x = createdStringForm.lengthStr.value;
+            while (str.length < x) {
+                str = str + ss;
+            }
+            if (str.length > x) {
+                str = str.slice(0, x);
+            }
+            createdStringForm.result.value = str;
+        }
+
+        //Function for calculate string length
+        function lengthString() {
+            countLengthForm.resultLength.value = countLengthForm.originalString.value.length;
+        }
+
+        //Block functions for Stopwatch
+        function trim(string) {
+            return string.replace(/\s+/g, " ").replace(/(^\s*)|(\s*)$/g, '');
+        }
+
+        function clearFields() {
+            ftt.init = 0;
+            clearTimeout(ftt.clocktimer);
+            document.clockForm.clock.value = '00:00:00.00';
+            document.clockForm.labelStop.value = '';
+        }
+
+        function clearAll() {
+            clearFields();
+            document.getElementById('noteStop').innerHTML = '';
+        }
+
+        function startTime() {
+            let thisDate = new Date();
+            let t = thisDate.getTime() - ftt.startDate.getTime();
+            let ms = t % 1000;
+            t -= ms;
+            ms = Math.floor(ms / 10);
+            t = Math.floor(t / 1000);
+            let s = t % 60;
+            t -= s;
+            t = Math.floor(t / 60);
+            let m = t % 60;
+            t -= m;
+            t = Math.floor(t / 60);
+            let h = t % 60;
+            if (h < 10) h = '0' + h;
+            if (m < 10) m = '0' + m;
+            if (s < 10) s = '0' + s;
+            if (ms < 10) ms = '0' + ms;
+            if (ftt.init == 1) document.clockForm.clock.value = h + ':' + m + ':' + s + '.' + ms;
+            ftt.clocktimer = setTimeout("startTime()", 10);
+        }
+
+        function findTime() {
+            if (ftt.init == 0) {
+                ftt.startDate = new Date();
+                startTime();
+                ftt.init = 1;
+            } else {
+                let str = trim(document.clockForm.labelStop.value);
+                document.getElementById('noteStop').innerHTML = (str == '' ? '' : str + ': ') +
+                    document.clockForm.clock.value + '<br>' + document.getElementById('noteStop').innerHTML;
+                clearFields();
+            }
+        }
+
+        //Block function for calculator
+        function inspectionKey(e) {
+            if (e.keyCode == 13 || ((e.keyCode == 187) && (!e.shiftKey))) {
+                calcme(calc.input.value);
+                return false;
+            }
+            if (e.keyCode === 27) {
+                calc.input.value = '';
+                return false;
+            }
+        }
+
+        function prepareCalcInput(calcInput) {
+            const comaToDotRegex = /\,+/g;
+            const delLeadingZeroesRegex = /([^.\d]|^)(0+)(\d)/g;
+            let inputWithoutComa = calcInput.replace(comaToDotRegex, '.');
+            let preparedInput = inputWithoutComa.replace(delLeadingZeroesRegex, '$1$3');
+            return preparedInput;
+        }
+
+        function delChar(calcInput) {
+            let position = calc.input.selectionStart;
+            var newInput = calcInput.substring(0, position - 1) + calcInput.substring(position, calcInput.length);
+            calc.input.value = newInput;
+        }
+
+        //Attention!!! Not secure function!
+        function calcme(clc) {
+            try {
+                let preparedInput = prepareCalcInput(clc);
+                let result = eval(preparedInput);
+                if (result == Infinity || result == -Infinity) {
+                    throw "Calculation error";
+                }
+                if (result || result === 0) {
+                    calc.input.value = result;
+                }
+            } catch (e) {
+                console.log(e);
+                calc.input.value = 'Sample not calculated!';
+            };
+        }
+    </script>
+
+    <div class="wrapper">
+        <div class="content">
+            <div class="header">
+                <h1>Functional testing tools</h1>
+            </div>
+            <div class="left_col">
+                <form name="createdStringForm">
+                    <h2 class="subheader">Create String</h2>
+                    <div class="wrapper_inline_block">
+                        <div class="left_float">
+                            <label for="symbols">Symbols:&nbsp;</label>
+                            <input type="text" name="symbols" size="10" value="a" />
+                        </div>
+                        <div class="left_float">
+                            <label for="lengthStr">String length:&nbsp;</label>
+                            <input type="number" min="1" max="3000" name="lengthStr" size="10" value="10" required />
+                        </div>
+                        <div class="left_float">
+                            <input type="button" value="Create" name="btn-create" onclick="createString()" />
+                        </div>
+                    </div>
+                    <br>
+                    <label>Result:</label>
+                    <br>
+                    <textarea name="result"></textarea>
+                </form>
+
+                <form name="countLengthForm">
+                    <h2 class="subheader">Count String Length</h2>
+                    <div class="wrapper_inline_block">
+                        <div class="wrapper_inline_block">
+                            <div class="left_float">
+                                <label class="label_original_string" for="originalString">String:&nbsp;</label>
+                                <input class="input_string" type="text" name="originalString" />
+                            </div>
+                            <div class="left_float">
+                                <input type="button" value="Count" name="btn-count" onclick="lengthString()" />
+                            </div>
+                        </div>
+                        <div class="result_align">
+                            <label for="resultLength">Length:&nbsp;</label>
+                            <input type="text" name="resultLength" readonly/>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <div class="right_col">
+                <form name="clockForm">
+                    <h2 class="subheader">Stopwatch</h2>
+                    <div class="wrapper_inline_block">
+                        <label for="labelStop">Label:&nbsp;</label>
+                        <input type="text" name="labelStop" size="12" maxlength="40" value="" />
+                        <input type="text" name="clock" size="12" maxlength="12" value="00:00:00.00" />
+                        <input type="button" class="button-start" name="btn-start" value="Start/Stop" onclick="findTime()" />
+                        <input type="button" name="btn-clear" value="Clear" onclick="clearAll()" />
+                        <div>
+                            <p id="noteStop" class="stopwatcher_result">
+                            </p>
+                        </div>
+                    </div>
+                </form>
+
+                <form name="calc" id="calculator">
+                    <h2 class="subheader">Сalculator</h2>
+                    <table>
+                        <tr>
+                            <td>
+                                <input type="text" name="input" size="16" onkeydown="return inspectionKey(event)" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="buttons">
+                                <input class="button-calc" type="button" name="btn-open-bracket" value="(" onclick="calc.input.value += '('" />
+                                <input class="button-calc" type="button" name="btn-closed-bracket" value=")" onclick="calc.input.value += ')'" />
+                                <input class="button-calc" type="button" name="btn-positive-negative" value="⬅" onclick="delChar(calc.input.value)" />
+                                <input class="button-calc" type="button" name="btn-clear" value="CE" onclick="calc.input.value = ''" />
+                                <input class="button-calc" type="button" name="btn-one" value="1" onclick="calc.input.value += '1'" />
+                                <input class="button-calc" type="button" name="btn-two" value="2" onclick="calc.input.value += '2'" />
+                                <input class="button-calc" type="button" name="btn-three" value="3" onclick="calc.input.value += '3'" />
+                                <input class="button-calc" type="button" name="btn-add" value="+" onclick="calc.input.value += '+'" />
+                                <input class="button-calc" type="button" name="btn-four" value="4" onclick="calc.input.value += '4'" />
+                                <input class="button-calc" type="button" name="btn-five" value="5" onclick="calc.input.value += '5'" />
+                                <input class="button-calc" type="button" name="btn-six" value="6" onclick="calc.input.value += '6'" />
+                                <input class="button-calc" type="button" name="btn-sub" value="-" onclick="calc.input.value += '-'" />
+                                <input class="button-calc" type="button" name="btn-seven" value="7" onclick="calc.input.value += '7'" />
+                                <input class="button-calc" type="button" name="btn-eight" value="8" onclick="calc.input.value += '8'" />
+                                <input class="button-calc" type="button" name="btn-nine" value="9" onclick="calc.input.value += '9'" />
+                                <input class="button-calc" type="button" name="btn-mul" value="x" onclick="calc.input.value += '*'" />
+                                <input class="button-calc" type="button" name="btn-dot" value="." onclick="calc.input.value += '.'" />
+                                <input class="button-calc" type="button" name="btn-zero" value="0" onclick="calc.input.value += '0'" />
+                                <input class="button-calc" type="button" name="btn-doit" value="=" onclick="calcme(calc.input.value)" />
+                                <input class="button-calc" type="button" name="btn-div" value="/" onclick="calc.input.value += '/'" />
+                            </td>
+                        </tr>
+                    </table>
+                </form>
+            </div>
+        </div>
+        <div class="footer">
+            <p>Copyright &#169;&nbsp;<span id="thisYear"></span> Antomonov Alex</p>
+        </div>
+    </div>
+</body>
+
+</html>
